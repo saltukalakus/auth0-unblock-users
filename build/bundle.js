@@ -257,11 +257,11 @@ module.exports =
 	module.exports = {
 		"title": "Auth0 Unblock Users",
 		"name": "auth0-unblock-users",
-		"version": "0.2.0",
+		"version": "0.3.0",
 		"author": "saltuk",
 		"description": "This extension will search for blocked users in the logs and unblock them",
 		"type": "cron",
-		"repository": "https://github.com/saltukalakus/auth0-logs-to-logstash",
+		"repository": "https://github.com/saltukalakus/auth0-unblock-users",
 		"keywords": [
 			"auth0",
 			"extension"
