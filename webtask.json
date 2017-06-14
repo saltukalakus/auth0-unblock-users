@@ -1,0 +1,25 @@
+{
+  "title": "Auth0 Unblock Users",
+  "name": "auth0-unblock-users",
+  "version": "0.1.0",
+  "author": "saltuk",
+  "description": "This extension will search for blocked users in the logs and unblock them",
+  "type": "cron",
+  "repository": "https://github.com/saltukalakus/auth0-logs-to-logstash",
+  "keywords": [
+    "auth0",
+    "extension"
+  ],
+  "schedule": "0 */1 * * * *",
+  "auth0": {
+    "scopes": "read:logs"
+  },
+  "secrets": {
+    "START_FROM": {
+      "description": "The Auth0 LogId from where you want to start."
+    },
+    "START_FROM": {
+      "description": "The Auth0 LogId from where you want to start."
+    }
+  }
+}
