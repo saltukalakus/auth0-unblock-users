@@ -57,7 +57,7 @@ module.exports =
 
 	function lastLogCheckpoint(req, res) {
 	  var ctx = req.webtaskContext;
-	  var required_settings = ['AUTH0_DOMAIN', 'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'UNBLOCK_DELAY_IN_SEC'];
+	  var required_settings = ['AUTH0_DOMAIN', 'AUTH0_CLIENT_ID', 'AUTH0_CLIENT_SECRET', 'UNBLOCK_DELAY'];
 	  var missing_settings = required_settings.filter(function (setting) {
 	    return !ctx.data[setting];
 	  });
@@ -257,7 +257,7 @@ module.exports =
 	module.exports = {
 		"title": "Auth0 Unblock Users",
 		"name": "auth0-unblock-users",
-		"version": "0.1.0",
+		"version": "0.1.1",
 		"author": "saltuk",
 		"description": "This extension will search for blocked users in the logs and unblock them",
 		"type": "cron",
@@ -273,6 +273,9 @@ module.exports =
 		"secrets": {
 			"START_FROM": {
 				"description": "The Auth0 LogId from where you want to start."
+			},
+			"UNBLOCK_DELAY": {
+				"description": "The delay for unblocking the users after they are blocked in seconds."
 			}
 		}
 	};
