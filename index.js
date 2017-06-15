@@ -23,14 +23,14 @@ function lastLogCheckpoint(req, res) {
     // Start the process.
     async.waterfall([
       (callback) => {
-        const getLogs = (context) => {
+        const getLogsInit = (context) => {
           console.log(`Logs from: ${context.checkpointId || 'Start'}.`);
 
           let take = 100;
 
           context.logs = context.logs || [];
 
-          getLogsFromAuth0(req.webtaskContext.data.AUTH0_DOMAIN, req.access_token, take, context.checkpointId, (logs, err) => {
+          getLogs(req.webtaskContext.data.AUTH0_DOMAIN, req.access_token, take, context.checkpointId, (logs, err) => {
             if (err) {
               return callback({ error: err, message: 'Error getting logs from Auth0' });
             }
@@ -45,7 +45,7 @@ function lastLogCheckpoint(req, res) {
           });
         };
 
-        getLogs({ checkpointId: startCheckpointId });
+        getLogsInit({ checkpointId: startCheckpointId });
       },
       (context, callback) => {
         const types_filter = [`limit_wc`];
@@ -60,35 +60,38 @@ function lastLogCheckpoint(req, res) {
         callback(null, context);
       },
       (context, callback) => {
-	      console.log('log xxxx');
-	      console.log(context.logs);
-        async.forEachSeries(context.logs, function(idx, callback) {
-          console.log(context.logs[idx].user_name);
-          console.log(context.logs[idx].connection);
-          //Play around with the color and action
-        }, function(err) {
-          if (err) {
-	            return callback({ error: err, message: 'Error while unblocking the user' });
-	        }
-          return callback(null, context);
-        });
-        
-	      /* for (var idx in context.logs) {
-	        console.log(context.logs[idx].user_name);
-	        console.log(context.logs[idx].connection);
-	        getUserIdFromAuth0(req.webtaskContext.data.AUTH0_DOMAIN, 
-	                         req.access_token,
-	                         context.logs[idx].connection,
-	                         context.logs[idx].name, function(user, err){
+	      async.forEachSeries(context.logs, function (idx, cb) {
+	        getUserId(req.webtaskContext.data.AUTH0_DOMAIN, 
+	                  req.access_token,
+	                  idx.connection,
+	                  idx.user_name, function(userID, err){
 	          if (err) {
-	            return callback({ error: err, message: 'Error getting logs from Auth0' });
+	            console.log("USER CB ERR=========");
+	            return cb({ error: err, message: 'Error getting logs from Auth0' });
 	          }
 	        
-	          console.log("user cb");
-	          console.log(user);
-	          return callback(null, context);
+	          console.log(idx.connection);
+	          console.log(idx.user_name);
+	          console.log("USER CB =========");
+	          console.log(userID);
+	          
+	          unblockUser(req.webtaskContext.data.AUTH0_DOMAIN, 
+	                      req.access_token,
+	                      userID,function( resp, err){
+	            if (err) {
+	              console.log("USER CB ERR=========");
+	              return cb({ error: err, message: 'Error getting logs from Auth0' });
+	            } 
+	            console.log("UNBLOCKED========")
+	            cb();
+	          })
 	        });
-        } */
+	      }, function (err) {
+	        if (err) {
+	          return callback({ error: err, message: 'Error while unblocking the user' });
+	        }
+	        return callback(null, context);
+	      });
       }
     ], function (err, context) {
       if (err) {
@@ -120,8 +123,8 @@ function lastLogCheckpoint(req, res) {
   });
 }
 
-function getLogsFromAuth0 (domain, token, take, from, cb) {
-  var url = `https://${domain}/api/v2/logs`;
+function getLogs (domain, token, take, from, cb) {
+  let url = `https://${domain}/api/v2/logs`;
 
   Request({
     method: 'GET',
@@ -147,19 +150,17 @@ function getLogsFromAuth0 (domain, token, take, from, cb) {
   });
 }
 
-function getUserIdFromAuth0 (domain, token, connection, name, cb) {
-  var url = `https://${domain}/api/v2/users`;
-
+function getUserId (domain, token, connection, name, cb) {
+  let url = `https://${domain}/api/v2/users`;
+  let luceneq = "name="+name+" AND identities.connection"+connection;
+  
   Request({
     method: 'GET',
     url: url,
     json: true,
     search_engine: "v2",
     qs: {
-       name: name,
-       identities: {
-         connection: connection
-       }
+       q: luceneq
     },
     headers: {
       Authorization: `Bearer ${token}`,
@@ -170,7 +171,31 @@ function getUserIdFromAuth0 (domain, token, connection, name, cb) {
       console.log('Error getting user id', err);
       cb(null, err);
     } else {
-      cb(body);
+      // This should be a unique user because we filter
+	    // with connection and user name. So getting the first
+	    // item in the returned array.
+	    cb(body[0].user_id);
+    }
+  });
+}
+
+function unblockUser (domain, token, userId, cb) {
+  let url = `https://${domain}/api/v2/user-blocks/${userId}`;
+
+  Request({
+    method: 'DELETE',
+    url: url,
+    json: true,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json'
+    }
+  }, (err, res, body) => {
+    if (err) {
+      console.log('Error unblocking user', err);
+      cb(null, err);
+    } else {
+	    cb(body);
     }
   });
 }
