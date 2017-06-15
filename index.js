@@ -60,7 +60,35 @@ function lastLogCheckpoint(req, res) {
         callback(null, context);
       },
       (context, callback) => {
-        console.log('Find the user id for the users to unblock');
+	      console.log('log xxxx');
+	      console.log(context.logs);
+        async.forEachSeries(context.logs, function(idx, callback) {
+          console.log(context.logs[idx].user_name);
+          console.log(context.logs[idx].connection);
+          //Play around with the color and action
+        }, function(err) {
+          if (err) {
+	            return callback({ error: err, message: 'Error while unblocking the user' });
+	        }
+          return callback(null, context);
+        });
+        
+	      /* for (var idx in context.logs) {
+	        console.log(context.logs[idx].user_name);
+	        console.log(context.logs[idx].connection);
+	        getUserIdFromAuth0(req.webtaskContext.data.AUTH0_DOMAIN, 
+	                         req.access_token,
+	                         context.logs[idx].connection,
+	                         context.logs[idx].name, function(user, err){
+	          if (err) {
+	            return callback({ error: err, message: 'Error getting logs from Auth0' });
+	          }
+	        
+	          console.log("user cb");
+	          console.log(user);
+	          return callback(null, context);
+	        });
+        } */
       }
     ], function (err, context) {
       if (err) {
@@ -112,6 +140,34 @@ function getLogsFromAuth0 (domain, token, take, from, cb) {
   }, (err, res, body) => {
     if (err) {
       console.log('Error getting logs', err);
+      cb(null, err);
+    } else {
+      cb(body);
+    }
+  });
+}
+
+function getUserIdFromAuth0 (domain, token, connection, name, cb) {
+  var url = `https://${domain}/api/v2/users`;
+
+  Request({
+    method: 'GET',
+    url: url,
+    json: true,
+    search_engine: "v2",
+    qs: {
+       name: name,
+       identities: {
+         connection: connection
+       }
+    },
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json'
+    }
+  }, (err, res, body) => {
+    if (err) {
+      console.log('Error getting user id', err);
       cb(null, err);
     } else {
       cb(body);

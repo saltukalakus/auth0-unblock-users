@@ -109,7 +109,35 @@ module.exports =
 
 	      callback(null, context);
 	    }, function (context, callback) {
-	      console.log('Find the user id for the users to unblock');
+	      console.log('log xxxx');
+	      console.log(context.logs);
+	      async.forEachSeries(context.logs, function (idx, callback) {
+	        console.log(context.logs[idx].user_name);
+	        console.log(context.logs[idx].connection);
+	        //Play around with the color and action
+	      }, function (err) {
+	        if (err) {
+	          return callback({ error: err, message: 'Error while unblocking the user' });
+	        }
+	        return callback(null, context);
+	      });
+
+	      /* for (var idx in context.logs) {
+	        console.log(context.logs[idx].user_name);
+	        console.log(context.logs[idx].connection);
+	        getUserIdFromAuth0(req.webtaskContext.data.AUTH0_DOMAIN, 
+	                         req.access_token,
+	                         context.logs[idx].connection,
+	                         context.logs[idx].name, function(user, err){
+	          if (err) {
+	            return callback({ error: err, message: 'Error getting logs from Auth0' });
+	          }
+	        
+	          console.log("user cb");
+	          console.log(user);
+	          return callback(null, context);
+	        });
+	       } */
 	    }], function (err, context) {
 	      if (err) {
 	        console.log('Job failed.', err);
@@ -159,6 +187,34 @@ module.exports =
 	  }, function (err, res, body) {
 	    if (err) {
 	      console.log('Error getting logs', err);
+	      cb(null, err);
+	    } else {
+	      cb(body);
+	    }
+	  });
+	}
+
+	function getUserIdFromAuth0(domain, token, connection, name, cb) {
+	  var url = 'https://' + domain + '/api/v2/users';
+
+	  Request({
+	    method: 'GET',
+	    url: url,
+	    json: true,
+	    search_engine: "v2",
+	    qs: {
+	      name: name,
+	      identities: {
+	        connection: connection
+	      }
+	    },
+	    headers: {
+	      Authorization: 'Bearer ' + token,
+	      Accept: 'application/json'
+	    }
+	  }, function (err, res, body) {
+	    if (err) {
+	      console.log('Error getting user id', err);
 	      cb(null, err);
 	    } else {
 	      cb(body);
@@ -257,7 +313,7 @@ module.exports =
 	module.exports = {
 		"title": "Auth0 Unblock Users",
 		"name": "auth0-unblock-users",
-		"version": "0.3.0",
+		"version": "0.4.0",
 		"author": "saltuk",
 		"description": "This extension will search for blocked users in the logs and unblock them",
 		"type": "cron",
@@ -268,7 +324,7 @@ module.exports =
 		],
 		"schedule": "0 */1 * * * *",
 		"auth0": {
-			"scopes": "read:logs"
+			"scopes": "read:logs read:users read:user_idp_tokens update:users"
 		},
 		"secrets": {
 			"START_FROM": {
