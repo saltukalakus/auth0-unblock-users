@@ -6,7 +6,7 @@ This extension will search the logs for the blocked users in your Auth0 tenant a
 
 # Disclaimer
 
-As the blocked users will be unblocked after the configured period with <b>`UNBLOCK_DELAY`</b> option , this will be an attack surface for hackers. By using this extension, you accept the risks it may cause. 
+As the blocked users will be unblocked after the configured period with <b>`UNBLOCK_DELAY`</b> option , this could be an attack surface for hackers. By using this extension, you accept the risks it may cause. 
 
 # Best Practices
 
