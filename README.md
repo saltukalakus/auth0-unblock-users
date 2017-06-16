@@ -20,7 +20,7 @@ In the 3rd party Logging Service, create alarms for frequent blocks for the same
 
  - `UNBLOCK_DELAY`: This allows you to set the period of time in minutes for blocked users to stay in blocked state. 
 
- - `START_FROM`: This allows you to set the log id for the extension to start. If unspecified extension cron job starts from the first log available and starts to unblock every user available in the logs. Note that if you have huge amount of logs when you install this extension and not set this option, it may take a few days for the extension to get to the edge of the logs. Until the extension runs in the edge of recent logs, it may not unblock recently blocked users accourding to your delay option. If you want extension to start unblocking recent blocked users immediately you may want to enter a log id of a recent log. Log id for a log can be extracted from the url. ![Alt text](images/log_url.jpg?raw=true "Log Id Image")
+ - `START_FROM`: This allows you to set the log id for the extension to start. If unspecified extension cron job starts from the first log available and starts to unblock every user available in the logs. Note that if you have huge amount of logs when you install this extension and not set this option, it may take a few days for the extension to get to the edge of the logs. Until the extension runs in the edge of recent logs, it may not unblock recently blocked users accourding to your delay option. If you want extension to start unblocking recent blocked users immediately you may want to enter a log id of a recent log. Log id for a log can be extracted from the url. ![Alt text](images/log_url.png?raw=true "Log Id Image")
 
 ## Usage
 
