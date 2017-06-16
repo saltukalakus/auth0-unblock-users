@@ -37,16 +37,16 @@ function lastLogCheckpoint(req, res) {
 
 	          if (logs && logs.length) {
 	            for (let l in logs) {
-	              if (isUnblockTimeReached(logs[l].date, ctx.data.UNBLOCK_DELAY)) {
-	                console.log("Unblock recent..");
-	                console.log('Total logs: ' + context.logs.length + '.');
+	              if (pauseUnblocking(logs[l].date, ctx.data.UNBLOCK_DELAY)) {
+	                console.log("Unblock paused..");
+	                console.log('Total logs to process: ' + context.logs.length + '.');
 	                return callback(null, context);
 	              }
 	              context.logs.push(logs[l]);
 	              context.checkpointId = logs[l]._id;
 	            }
-	            console.log("Unblock old..");
-	            console.log('Total logs: ' + context.logs.length + '.');
+	            console.log("Unblock continue..");
+	            console.log('Total logs to process: ' + context.logs.length + '.');
 	          } else {
 	              console.log("No new logs yet.");
 	          }
@@ -85,8 +85,7 @@ function lastLogCheckpoint(req, res) {
 	            if (err) {
 	              return cb({ error: err, message: 'Error unblocking user' });
 	            } 
-	            console.log("UNBLOCKED UserID")
-              console.log(userID);
+	            console.log("USER UNBLOCKED")
 	            cb();
 	          })
 	        });
@@ -153,33 +152,41 @@ function getLogs (domain, token, take, from, cb) {
   });
 }
 
-function getUserId (domain, token, connection, name, cb) {
-  let url = `https://${domain}/api/v2/users`;
-  let luceneq = "name="+name+" AND identities.connection"+connection;
-  
+function getUserId(domain, token, connection, name, cb) {
+  var url = 'https://' + domain + '/api/v2/users';
+	var luceneq = 'name:"' + name + '" AND identities.connection:"'+ connection + '"';
+	
   Request({
-    method: 'GET',
-    url: url,
-    json: true,
-    search_engine: "v2",
-    qs: {
-       q: luceneq
-    },
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/json'
-    }
-  }, (err, res, body) => {
-    if (err) {
-      console.log('Error getting user id', err);
-      cb(null, err);
-    } else {
-      // This should be a unique user because we filter
+	  method: 'GET',
+	  url: url,
+	  json: true,
+	  qs: {
+	    search_engine: "v2",
+	    q: luceneq
+	  },
+	  headers: {
+	    Authorization: 'Bearer ' + token,
+	    Accept: 'application/json'
+	  }
+	}, function (err, res, body) {
+	  if (err) {
+	    console.log('Error getting user id', err);
+	    cb(null, err);
+	  } else {
+	    // This should be a unique user because we filter
 	    // with connection and user name. So getting the first
 	    // item in the returned array.
+      if (body.length > 1) {
+        console.log("USER SHOULD BE UNIQUE!!!");
+        console.log(body);
+      }
+      console.log("USER EMAIL =======");
+	    console.log(body[0].email);
+	    console.log("USER ID =======");
+	    console.log(body[0].user_id);
 	    cb(body[0].user_id);
-    }
-  });
+	  }
+	});
 }
 
 function unblockUser (domain, token, userId, cb) {
@@ -203,7 +210,8 @@ function unblockUser (domain, token, userId, cb) {
   });
 }
 
-function isUnblockTimeReached(logDate, unblockDelay){
+// If the log date is not old enough this functions returns true
+function pauseUnblocking(logDate, unblockDelay){
   var logTime = new Date(logDate)
   var cTime = new Date();
   var res = (cTime > logTime)?(((cTime - logTime) < unblockDelay * 60 * 1000)?true:false):true;

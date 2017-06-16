@@ -87,16 +87,16 @@ module.exports =
 
 	          if (logs && logs.length) {
 	            for (var l in logs) {
-	              if (isUnblockTimeReached(logs[l].date, ctx.data.UNBLOCK_DELAY)) {
-	                console.log("Unblock recent..");
-	                console.log('Total logs: ' + context.logs.length + '.');
+	              if (pauseUnblocking(logs[l].date, ctx.data.UNBLOCK_DELAY)) {
+	                console.log("Unblock paused..");
+	                console.log('Total logs to process: ' + context.logs.length + '.');
 	                return callback(null, context);
 	              }
 	              context.logs.push(logs[l]);
 	              context.checkpointId = logs[l]._id;
 	            }
-	            console.log("Unblock old..");
-	            console.log('Total logs: ' + context.logs.length + '.');
+	            console.log("Unblock continue..");
+	            console.log('Total logs to process: ' + context.logs.length + '.');
 	          } else {
 	            console.log("No new logs yet.");
 	          }
@@ -127,8 +127,7 @@ module.exports =
 	            if (err) {
 	              return cb({ error: err, message: 'Error unblocking user' });
 	            }
-	            console.log("UNBLOCKED UserID");
-	            console.log(userID);
+	            console.log("USER UNBLOCKED");
 	            cb();
 	          });
 	        });
@@ -195,14 +194,14 @@ module.exports =
 
 	function getUserId(domain, token, connection, name, cb) {
 	  var url = 'https://' + domain + '/api/v2/users';
-	  var luceneq = "name=" + name + " AND identities.connection" + connection;
+	  var luceneq = 'name:"' + name + '" AND identities.connection:"' + connection + '"';
 
 	  Request({
 	    method: 'GET',
 	    url: url,
 	    json: true,
-	    search_engine: "v2",
 	    qs: {
+	      search_engine: "v2",
 	      q: luceneq
 	    },
 	    headers: {
@@ -217,6 +216,14 @@ module.exports =
 	      // This should be a unique user because we filter
 	      // with connection and user name. So getting the first
 	      // item in the returned array.
+	      if (body.length > 1) {
+	        console.log("USER SHOULD BE UNIQUE!!!");
+	        console.log(body);
+	      }
+	      console.log("USER EMAIL =======");
+	      console.log(body[0].email);
+	      console.log("USER ID =======");
+	      console.log(body[0].user_id);
 	      cb(body[0].user_id);
 	    }
 	  });
@@ -243,7 +250,8 @@ module.exports =
 	  });
 	}
 
-	function isUnblockTimeReached(logDate, unblockDelay) {
+	// If the log date is not old enough this functions returns true
+	function pauseUnblocking(logDate, unblockDelay) {
 	  var logTime = new Date(logDate);
 	  var cTime = new Date();
 	  var res = cTime > logTime ? cTime - logTime < unblockDelay * 60 * 1000 ? true : false : true;
@@ -341,7 +349,7 @@ module.exports =
 	module.exports = {
 		"title": "Auth0 Unblock Users",
 		"name": "auth0-unblock-users",
-		"version": "0.7.0",
+		"version": "0.8.0",
 		"author": "saltuk",
 		"description": "This extension will search for blocked users in the logs and unblock them",
 		"type": "cron",
