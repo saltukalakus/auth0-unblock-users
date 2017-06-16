@@ -11,7 +11,7 @@ As the blocked users will be unblocked after your configured period, this will b
 
 # Best Practices
 
-Keep UNBLOCK_DELAY reasonably long and monitor the blocked/unblocked users from logs. One way to do this is by exporting the Auth0 Logs to a third party Logging Service with one of [Auth0's Log extensions](https://auth0.com/docs/extensions#export-auth0-logs-to-an-external-service). 
+Keep <b>UNBLOCK_DELAY</b> reasonably long and monitor the blocked/unblocked users from logs. One way to do this is by exporting the Auth0 Logs to a third party Logging Service with one of [Auth0's Log extensions](https://auth0.com/docs/extensions#export-auth0-logs-to-an-external-service). 
 
 In the 3rd party Logging Service, create alarms for frequent blocks for the same user. You can permanently block a user from Auth0 dashboard in such cases if required.
 
@@ -38,7 +38,7 @@ $ wt cron schedule \
     --secret AUTH0_DOMAIN="YOUR_AUTH0_DOMAIN" \
     --secret AUTH0_GLOBAL_CLIENT_ID="YOUR_AUTH0_GLOBAL_CLIENT_ID" \
     --secret AUTH0_GLOBAL_CLIENT_SECRET="YOUR_AUTH0_GLOBAL_CLIENT_SECRET" \
-    --secret UNBLOCK_DELAY="SECONDS_TO_WAIT_FOR_UNBLOCK_USERS" \
+    --secret UNBLOCK_DELAY="MINUTES_TO_WAIT_FOR_UNBLOCKING_USERS" \
     --secret START_FROM="OPTIONAL_LOG_ID_TO_START_FROM" \
     "*/1 * * * *" \
     build/bundle.js
