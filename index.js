@@ -35,19 +35,21 @@ function lastLogCheckpoint(req, res) {
               return callback({ error: err, message: 'Error getting logs from Auth0' });
             }
 
-            if (logs && logs.length) {
-              logs.forEach((l) => {
-                if (isUnblockTimeReached(l.date)){
-                  console.log("Unblock recent..")
-                  console.log(`Total logs: ${context.logs.length}.`);
-                  return callback(null, context);       
-                }
-                context.logs.push(l);
-                context.checkpointId = l._id;
-              });
-              console.log("Unblock old..")
-              console.log(`Total logs: ${context.logs.length}.`);
-            }
+	          if (logs && logs.length) {
+	            for (let l in logs) {
+	              if (isUnblockTimeReached(logs[l].date, ctx.data.UNBLOCK_DELAY)) {
+	                console.log("Unblock recent..");
+	                console.log('Total logs: ' + context.logs.length + '.');
+	                return callback(null, context);
+	              }
+	              context.logs.push(logs[l]);
+	              context.checkpointId = logs[l]._id;
+	            }
+	            console.log("Unblock old..");
+	            console.log('Total logs: ' + context.logs.length + '.');
+	          } else {
+	              console.log("No new logs yet.");
+	          }
 
             return callback(null, context);
           });
@@ -74,23 +76,17 @@ function lastLogCheckpoint(req, res) {
 	                  idx.connection,
 	                  idx.user_name, function(userID, err){
 	          if (err) {
-	            console.log("USER CB ERR=========");
-	            return cb({ error: err, message: 'Error getting logs from Auth0' });
+	            return cb({ error: err, message: 'Error getting userID from Auth0' });
 	          }
 	        
-	          console.log(idx.connection);
-	          console.log(idx.user_name);
-	          console.log("USER CB =========");
-	          console.log(userID);
-	          
 	          unblockUser(req.webtaskContext.data.AUTH0_DOMAIN, 
 	                      req.access_token,
 	                      userID,function( resp, err){
 	            if (err) {
-	              console.log("USER CB ERR=========");
-	              return cb({ error: err, message: 'Error getting logs from Auth0' });
+	              return cb({ error: err, message: 'Error unblocking user' });
 	            } 
-	            console.log("UNBLOCKED========")
+	            console.log("UNBLOCKED UserID")
+              console.log(userID);
 	            cb();
 	          })
 	        });
@@ -207,10 +203,10 @@ function unblockUser (domain, token, userId, cb) {
   });
 }
 
-function isUnblockTimeReached(logDate){
+function isUnblockTimeReached(logDate, unblockDelay){
   var logTime = new Date(logDate)
   var cTime = new Date();
-  var res = (cTime > logTime)?(((cTime - logTime) < process.env.UNBLOCK_DELAY * 60 * 1000)?true:false):true;
+  var res = (cTime > logTime)?(((cTime - logTime) < unblockDelay * 60 * 1000)?true:false):true;
   return res;
 }
 
