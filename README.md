@@ -1,13 +1,12 @@
-# Auth0 - Logs to Logstash
+# Auth0 - Unblock Users
 
 [![Auth0 Extensions](http://cdn.auth0.com/extensions/assets/badge.svg)](https://sandbox.it.auth0.com/api/run/auth0-extensions/extensions-badge?webtask_no_cache=1)
 
-This extension will search the logs for blocked users and unblocks them after the configurable delay passes. 
-
+This extension will search the logs for the blocked users in your Auth0 tenant and unblock them after the configurable delay passes. 
 
 # Disclaimer
 
-As the blocked users will be unblocked after your configured period, this will be an attack surface for hackers. By using this extension, you accept the risks it may cause. 
+As the blocked users will be unblocked after the configured period with <b>UNBLOCK_DELAY</b> option , this will be an attack surface for hackers. By using this extension, you accept the risks it may cause. 
 
 # Best Practices
 
@@ -15,6 +14,10 @@ Keep <b>UNBLOCK_DELAY</b> reasonably long and monitor the blocked/unblocked user
 
 In the 3rd party Logging Service, create alarms for frequent blocks for the same user. You can permanently block a user from Auth0 dashboard in such cases if required.
 
+## Installation
+
+* Fork this repository to your GitHub account.
+* In the management dashboard [extensions](https://manage.auth0.com/#/extensions) section, enter your project's Github link in the opened window when you click <b>`+ CREATE EXTENSION`</b> button. 
 
 ## Configure Webtask
 
