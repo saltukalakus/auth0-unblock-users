@@ -6,11 +6,11 @@ This extension will search the logs for the blocked users in your Auth0 tenant a
 
 # Disclaimer
 
-As the blocked users will be unblocked after the configured period with <b>UNBLOCK_DELAY</b> option , this will be an attack surface for hackers. By using this extension, you accept the risks it may cause. 
+As the blocked users will be unblocked after the configured period with <b>`UNBLOCK_DELAY`</b> option , this will be an attack surface for hackers. By using this extension, you accept the risks it may cause. 
 
 # Best Practices
 
-Keep <b>UNBLOCK_DELAY</b> reasonably long and monitor the blocked/unblocked users from logs. One way to do this is by exporting the Auth0 Logs to a third party Logging Service with one of [Auth0's Log extensions](https://auth0.com/docs/extensions#export-auth0-logs-to-an-external-service). 
+Keep <b>`UNBLOCK_DELAY`</b> reasonably long and monitor the blocked/unblocked users from logs. One way to do this is by exporting the Auth0 Logs to a third party Logging Service with one of [Auth0's Log extensions](https://auth0.com/docs/extensions#export-auth0-logs-to-an-external-service). 
 
 In the 3rd party Logging Service, create alarms for frequent blocks for the same user. You can permanently block a user from Auth0 dashboard in such cases if required.
 
