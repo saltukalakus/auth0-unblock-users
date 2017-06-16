@@ -4,10 +4,6 @@
 
 This extension will search the logs for the blocked users in your Auth0 tenant and unblock them after the configurable delay passes. 
 
-# Disclaimer
-
-As the blocked users will be unblocked after the configured period with <b>`UNBLOCK_DELAY`</b> option , this could be an attack surface for hackers. By using this extension, you accept the risks it may cause. 
-
 # Best Practices
 
 Keep <b>`UNBLOCK_DELAY`</b> reasonably long and monitor the blocked/unblocked users from logs. One way to do this is by exporting the Auth0 Logs to a third party Logging Service with one of [Auth0's Log extensions](https://auth0.com/docs/extensions#export-auth0-logs-to-an-external-service). 
@@ -19,41 +15,12 @@ In the 3rd party Logging Service, create alarms for frequent blocks for the same
 * Fork this repository to your GitHub account.
 * In the management dashboard [extensions](https://manage.auth0.com/#/extensions) section, enter your project's Github link in the opened window when you click <b>`+ CREATE EXTENSION`</b> button. 
 
-## Configure Webtask
 
-If you haven't configured Webtask on your machine run this first:
+## Configurable Options
 
-```
-npm i -g wt-cli
-wt init
-```
+ - `UNBLOCK_DELAY`: This allows you to set the period of time in minutes for blocked users to stay in blocked state. 
 
-> Requires at least node 4.2.2 - if you're running multiple version of node make sure to load the right version, e.g. "nvm use 4.2.2"
-
-## Deploy to Webtask.io
-
-To run it on a schedule (run every 5 minutes for example):
-
-```bash
-$ npm run build
-$ wt cron schedule \
-    --name auth0-unblock-users \
-    --secret AUTH0_DOMAIN="YOUR_AUTH0_DOMAIN" \
-    --secret AUTH0_GLOBAL_CLIENT_ID="YOUR_AUTH0_GLOBAL_CLIENT_ID" \
-    --secret AUTH0_GLOBAL_CLIENT_SECRET="YOUR_AUTH0_GLOBAL_CLIENT_SECRET" \
-    --secret UNBLOCK_DELAY="MINUTES_TO_WAIT_FOR_UNBLOCKING_USERS" \
-    --secret START_FROM="OPTIONAL_LOG_ID_TO_START_FROM" \
-    "*/1 * * * *" \
-    build/bundle.js
-```
-
-
-The following settings are optional:
-
- - `START_FROM`: This allows you to set the log id for the extension to start. If unspecified extension cron job starts from the first log available.
-
-
-> You can get your Global Client Id/Secret here: https://auth0.com/docs/api/v2
+ - `START_FROM`: This allows you to set the log id for the extension to start. If unspecified extension cron job starts from the first log available and starts to unblock every user available in the logs. Note that if you have huge amount of logs when you install this extension and not set this option, it may take a few days for the extension to get to the edge of the logs. Until the extension runs in the edge of recent logs, it may not unblock recently blocked users accourding to your delay option. If you want extension to start unblocking recent blocked users immediately you may want to enter a log id of a recent log. Log id for a log can be extracted from the url. ![Alt text](images/log_url.jpg?raw=true "Log Id Image")
 
 ## Usage
 
@@ -68,9 +35,13 @@ This extension searches the logs with type `limit_wc` for blocked users. Once a 
 
 If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/whitehat) details the procedure for disclosing security issues.
 
+# Disclaimer
+
+As the blocked users will be unblocked after the configured period with <b>`UNBLOCK_DELAY`</b> option , this could be an attack surface for hackers. By using this extension, you accept the risks it may cause. 
+
 ## Author
 
-[Auth0](auth0.com)
+Saltuk Alakus
 
 ## What is Auth0?
 
