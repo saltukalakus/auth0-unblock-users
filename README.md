@@ -4,7 +4,7 @@
 
 This extension will search the logs for the blocked users in your Auth0 tenant and unblock them after the configurable delay passes. 
 
-# Best Practices
+## Best Practices
 
 Keep <b>`UNBLOCK_DELAY`</b> reasonably long and monitor the blocked/unblocked users from logs. One way to do this is by exporting the Auth0 Logs to a third party Logging Service with one of [Auth0's Log extensions](https://auth0.com/docs/extensions#export-auth0-logs-to-an-external-service). 
 
@@ -35,7 +35,7 @@ This extension searches the logs with type `limit_wc` for blocked users. Once a 
 
 If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/whitehat) details the procedure for disclosing security issues.
 
-# Disclaimer
+## Disclaimer
 
 As the blocked users will be unblocked after the configured period with <b>`UNBLOCK_DELAY`</b> option , this could be an attack surface for hackers. By using this extension, you accept the risks it may cause. 
 
