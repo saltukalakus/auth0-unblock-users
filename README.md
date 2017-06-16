@@ -2,7 +2,19 @@
 
 [![Auth0 Extensions](http://cdn.auth0.com/extensions/assets/badge.svg)](https://sandbox.it.auth0.com/api/run/auth0-extensions/extensions-badge?webtask_no_cache=1)
 
-This extension will search the logs for blocked users and unblocks them after the configurable delay passes.
+This extension will search the logs for blocked users and unblocks them after the configurable delay passes. 
+
+
+# Disclaimer
+
+As the blocked users will be unblocked after your configured period, this will be an attack surface for hackers. By using this extension, you accept the risks it may cause. 
+
+# Best Practices
+
+Keep UNBLOCK_DELAY reasonably long and monitor the blocked/unblocked users from logs. One way to do this is by exporting the Auth0 Logs to a third party Logging Service with one of [Auth0's Log extensions](https://auth0.com/docs/extensions#export-auth0-logs-to-an-external-service). 
+
+In the 3rd party Logging Service, create alarms for frequent blocks for the same user. You can permanently block a user from Auth0 dashboard in such cases if required.
+
 
 ## Configure Webtask
 
