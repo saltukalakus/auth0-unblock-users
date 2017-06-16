@@ -349,7 +349,7 @@ module.exports =
 	module.exports = {
 		"title": "Auth0 Unblock Users",
 		"name": "auth0-unblock-users",
-		"version": "0.8.0",
+		"version": "1.0.0",
 		"author": "saltuk",
 		"description": "This extension will search for blocked users in the logs and unblock them",
 		"type": "cron",
