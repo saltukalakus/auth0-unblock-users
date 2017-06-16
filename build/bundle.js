@@ -87,12 +87,18 @@ module.exports =
 
 	          if (logs && logs.length) {
 	            logs.forEach(function (l) {
-	              return context.logs.push(l);
+	              if (isUnblockTimeReached(l.date)) {
+	                console.log("Unblock recent..");
+	                console.log('Total logs: ' + context.logs.length + '.');
+	                return callback(null, context);
+	              }
+	              context.logs.push(l);
+	              context.checkpointId = l._id;
 	            });
-	            context.checkpointId = context.logs[context.logs.length - 1]._id;
+	            console.log("Unblock old..");
+	            console.log('Total logs: ' + context.logs.length + '.');
 	          }
 
-	          console.log('Total logs: ' + context.logs.length + '.');
 	          return callback(null, context);
 	        });
 	      };
@@ -152,8 +158,7 @@ module.exports =
 	      console.log('Job complete.');
 
 	      return req.webtaskContext.storage.set({
-	        checkpointId: context.checkpointId,
-	        totalLogsProcessed: context.logs.length
+	        checkpointId: context.checkpointId
 	      }, { force: 1 }, function (error) {
 	        if (error) {
 	          return res.status(500).send({ error: error, message: 'Error storing checkpoint' });
@@ -240,6 +245,13 @@ module.exports =
 	      cb(body);
 	    }
 	  });
+	}
+
+	function isUnblockTimeReached(logDate) {
+	  var logTime = new Date(logDate);
+	  var cTime = new Date();
+	  var res = cTime > logTime ? cTime - logTime < process.env.UNBLOCK_DELAY * 60 * 1000 ? true : false : true;
+	  return res;
 	}
 
 	var getTokenCached = memoizer({
@@ -333,7 +345,7 @@ module.exports =
 	module.exports = {
 		"title": "Auth0 Unblock Users",
 		"name": "auth0-unblock-users",
-		"version": "0.5.0",
+		"version": "0.6.0",
 		"author": "saltuk",
 		"description": "This extension will search for blocked users in the logs and unblock them",
 		"type": "cron",

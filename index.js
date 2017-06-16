@@ -36,11 +36,19 @@ function lastLogCheckpoint(req, res) {
             }
 
             if (logs && logs.length) {
-              logs.forEach((l) => context.logs.push(l));
-              context.checkpointId = context.logs[context.logs.length - 1]._id;
+              logs.forEach((l) => {
+                if (isUnblockTimeReached(l.date)){
+                  console.log("Unblock recent..")
+                  console.log(`Total logs: ${context.logs.length}.`);
+                  return callback(null, context);       
+                }
+                context.logs.push(l);
+                context.checkpointId = l._id;
+              });
+              console.log("Unblock old..")
+              console.log(`Total logs: ${context.logs.length}.`);
             }
 
-            console.log(`Total logs: ${context.logs.length}.`);
             return callback(null, context);
           });
         };
@@ -109,8 +117,7 @@ function lastLogCheckpoint(req, res) {
       console.log('Job complete.');
 
       return req.webtaskContext.storage.set({
-        checkpointId: context.checkpointId,
-        totalLogsProcessed: context.logs.length
+        checkpointId: context.checkpointId
       }, { force: 1 }, (error) => {
         if (error) {
           return res.status(500).send({error: error, message: 'Error storing checkpoint' });
@@ -198,6 +205,13 @@ function unblockUser (domain, token, userId, cb) {
 	    cb(body);
     }
   });
+}
+
+function isUnblockTimeReached(logDate){
+  var logTime = new Date(logDate)
+  var cTime = new Date();
+  var res = (cTime > logTime)?(((cTime - logTime) < process.env.UNBLOCK_DELAY * 60 * 1000)?true:false):true;
+  return res;
 }
 
 const getTokenCached = memoizer({
