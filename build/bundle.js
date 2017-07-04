@@ -220,8 +220,6 @@ module.exports =
 	        console.log("USER SHOULD BE UNIQUE!!!");
 	        console.log(body);
 	      }
-	      console.log("USER EMAIL =======");
-	      console.log(body[0].email);
 	      console.log("USER ID =======");
 	      console.log(body[0].user_id);
 	      cb(body[0].user_id);
@@ -349,7 +347,7 @@ module.exports =
 	module.exports = {
 		"title": "Auth0 Unblock Users",
 		"name": "auth0-unblock-users",
-		"version": "1.0.0",
+		"version": "1.1.0",
 		"author": "saltuk",
 		"description": "This extension will search for blocked users in the logs and unblock them",
 		"type": "cron",

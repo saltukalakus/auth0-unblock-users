@@ -180,8 +180,6 @@ function getUserId(domain, token, connection, name, cb) {
         console.log("USER SHOULD BE UNIQUE!!!");
         console.log(body);
       }
-      console.log("USER EMAIL =======");
-	    console.log(body[0].email);
 	    console.log("USER ID =======");
 	    console.log(body[0].user_id);
 	    cb(body[0].user_id);
