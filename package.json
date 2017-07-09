@@ -1,6 +1,6 @@
 {
   "name": "auth0-unblock-users",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "This extension will search for blocked users in the logs and unblock them",
   "main": "index.js",
   "scripts": {

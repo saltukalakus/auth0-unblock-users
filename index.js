@@ -173,16 +173,18 @@ function getUserId(domain, token, connection, name, cb) {
 	    console.log('Error getting user id', err);
 	    cb(null, err);
 	  } else {
-	    // This should be a unique user because we filter
+	    // This should be a unique single user because we filter
 	    // with connection and user name. So getting the first
 	    // item in the returned array.
-      if (body.length > 1) {
-        console.log("USER SHOULD BE UNIQUE!!!");
-        console.log(body);
-      }
-	    console.log("USER ID =======");
-	    console.log(body[0].user_id);
-	    cb(body[0].user_id);
+      if (body.length !== 1) {
+	      cb(null, "Multiple user or no user for the requested name! Log Ignored");
+	    } else if (typeof body[0].user_id === 'undefined' || !body[0].user_id){
+	      cb(null, "User Id missing! Log Ignored!");
+	    } else {
+	      console.log("USER ID =======");
+	      console.log(body[0].user_id);
+	      cb(body[0].user_id);
+	    }
 	  }
 	});
 }

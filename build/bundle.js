@@ -213,16 +213,18 @@ module.exports =
 	      console.log('Error getting user id', err);
 	      cb(null, err);
 	    } else {
-	      // This should be a unique user because we filter
+	      // This should be a unique single user because we filter
 	      // with connection and user name. So getting the first
 	      // item in the returned array.
-	      if (body.length > 1) {
-	        console.log("USER SHOULD BE UNIQUE!!!");
-	        console.log(body);
+	      if (body.length !== 1) {
+	        cb(null, "Multiple user or no user for the requested name! Log Ignored");
+	      } else if (typeof body[0].user_id === 'undefined' || !body[0].user_id) {
+	        cb(null, "User Id missing! Log Ignored!");
+	      } else {
+	        console.log("USER ID =======");
+	        console.log(body[0].user_id);
+	        cb(body[0].user_id);
 	      }
-	      console.log("USER ID =======");
-	      console.log(body[0].user_id);
-	      cb(body[0].user_id);
 	    }
 	  });
 	}
@@ -347,7 +349,7 @@ module.exports =
 	module.exports = {
 		"title": "Auth0 Unblock Users",
 		"name": "auth0-unblock-users",
-		"version": "1.1.0",
+		"version": "1.2.0",
 		"author": "saltuk",
 		"description": "This extension will search for blocked users in the logs and unblock them",
 		"type": "cron",
