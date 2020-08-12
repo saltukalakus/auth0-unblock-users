@@ -1,3 +1,7 @@
+# Notice
+
+The solution provided here is depracated. Please check the following [QA](https://community.auth0.com/t/is-it-possible-to-unblock-users-blocked-by-brute-force-protection-automatically-after-some-timeout-period-is-reached/7212) for recent recommendations.
+
 # Auth0 - Unblock Users
 
 [![Auth0 Extensions](http://cdn.auth0.com/extensions/assets/badge.svg)](https://sandbox.it.auth0.com/api/run/auth0-extensions/extensions-badge?webtask_no_cache=1)
